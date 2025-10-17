@@ -3,6 +3,7 @@ package federicopini.B6_L5.controllers;
 import federicopini.B6_L5.entities.Dipendente;
 import federicopini.B6_L5.entities.Viaggio;
 import federicopini.B6_L5.exceptions.ValidationException;
+import federicopini.B6_L5.payloads.NewDipendentePayload;
 import federicopini.B6_L5.payloads.NewViaggioPayload;
 import federicopini.B6_L5.services.ViaggioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +44,23 @@ public class ViaggioController {
         return this.service.createViaggio(body);
     }
 
+    @PutMapping("/{id}")
+    public Viaggio updateViaggio(@RequestBody @Validated NewViaggioPayload body, BindingResult result, @PathVariable UUID id){
+        if(result.hasErrors()){
+            throw new ValidationException(result.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
+        }
+        return this.service.updateViaggio(body,id);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteViaggio(@PathVariable UUID id){
         this.service.deleteViaggio(id);
+    }
+
+    @PatchMapping("/{id}/completed")
+    public Viaggio completeViaggio(@PathVariable UUID id) {
+        return this.service.completaViaggio(id);
     }
 
 }

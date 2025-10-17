@@ -18,6 +18,7 @@ public class Prenotazione {
     @Id
     @GeneratedValue
     private UUID id;
+    private String note;
     @ManyToOne
     @JoinColumn(name = "dipendente_id")
     private Dipendente dipendente;
@@ -26,4 +27,11 @@ public class Prenotazione {
     private Viaggio viaggio;
     @Column(name ="data_richiesta")
     private LocalDate dataRichiesta;
+
+    public Prenotazione(Viaggio viaggio, Dipendente dipendente,String note) {
+        this.dataRichiesta = LocalDate.now();
+        this.viaggio = viaggio;
+        this.dipendente = dipendente;
+        this.note = note;
+    }
 }

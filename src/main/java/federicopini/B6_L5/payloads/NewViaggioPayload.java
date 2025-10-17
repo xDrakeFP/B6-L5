@@ -1,7 +1,9 @@
 package federicopini.B6_L5.payloads;
 
 import federicopini.B6_L5.entities.enums.StatoViaggio;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,7 +15,9 @@ import java.time.LocalDate;
 public class NewViaggioPayload {
     @NotBlank
     private String destinazione;
-    @NotBlank
+    @NotNull
+    @Future
     private LocalDate data;
+    @NotNull
     private StatoViaggio statoViaggio;
 }

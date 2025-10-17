@@ -2,6 +2,7 @@ package federicopini.B6_L5.services;
 
 import federicopini.B6_L5.entities.Viaggio;
 import federicopini.B6_L5.entities.enums.StatoViaggio;
+import federicopini.B6_L5.exceptions.AlreadyCompletedException;
 import federicopini.B6_L5.exceptions.DateException;
 import federicopini.B6_L5.exceptions.NotFoundException;
 import federicopini.B6_L5.payloads.NewViaggioPayload;
@@ -54,6 +55,21 @@ public class ViaggioService {
         Viaggio updatedViaggio = this.repo.save(found);
         log.info("Modificato con successo il viaggio con id " + updatedViaggio.getId());
         return updatedViaggio;
+    }
+
+    // Per testare l'aggiornamento di StatoViaggio commentare le righe 67 e 68
+
+
+        public Viaggio completaViaggio(UUID id){
+        Viaggio found= this.findById(id);
+        if (found.getStatoViaggio().equals(StatoViaggio.COMPLETATO))
+            throw new DateException("Il viaggio è già stato completato");
+        if (found.getData().isAfter(LocalDate.now()))
+            throw new DateException("Impossibile completare il viaggio, è in partenza il "+found.getData());
+        found.setStatoViaggio(StatoViaggio.COMPLETATO);
+        Viaggio completedViaggio = this.repo.save(found);
+        log.info("Compiuto il viaggio con id " + completedViaggio.getId());
+        return completedViaggio;
     }
 
     public void deleteViaggio(UUID id) {

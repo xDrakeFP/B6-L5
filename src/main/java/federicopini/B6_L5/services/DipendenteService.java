@@ -1,5 +1,7 @@
 package federicopini.B6_L5.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import federicopini.B6_L5.entities.Dipendente;
 import federicopini.B6_L5.exceptions.BadRequestException;
 import federicopini.B6_L5.exceptions.DataInUseException;
@@ -13,8 +15,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -24,6 +28,9 @@ public class DipendenteService {
 
     private static final long MAX_SIZE = 5 * 1024 * 1024; // 5 MB
     private static final List<String> ALLOWED_TYPES = List.of("image/png", "image/jpeg");
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Autowired
     private DipendenteRepository repo;
@@ -73,4 +80,22 @@ public class DipendenteService {
         log.info("Eliminato con successo il dipendente con id "+found.getId());
     }
 
+    public Dipendente updateAvatar(UUID id, MultipartFile file) {
+        if(file.isEmpty()) throw new BadRequestException("File vuoto!");
+        if(file.getSize() > MAX_SIZE) throw new BadRequestException("File troppo grande (inserisci un file sotto i 5 MB)");
+        if(!ALLOWED_TYPES.contains(file.getContentType())) throw new BadRequestException("I formati permessi sono jpeg e png!");
+
+        Dipendente found = this.findById(id);
+
+        try{
+            Map result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            String imageURL = (String) result.get("url");
+            found.setAvatarURL(imageURL);
+            Dipendente modifiedUrlDip = this.repo.save(found);
+            log.info("Modificato con successo l'avatar del dipendente con id "+modifiedUrlDip.getId());
+            return found;
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+}
 }

@@ -1,9 +1,10 @@
 package federicopini.B6_L5.controllers;
 
 import federicopini.B6_L5.entities.Dipendente;
+import federicopini.B6_L5.entities.Viaggio;
 import federicopini.B6_L5.exceptions.ValidationException;
-import federicopini.B6_L5.payloads.NewDipendentePayload;
-import federicopini.B6_L5.services.DipendenteService;
+import federicopini.B6_L5.payloads.NewViaggioPayload;
+import federicopini.B6_L5.services.ViaggioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
@@ -15,46 +16,37 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/dipendenti")
-public class DipendenteController {
+@RequestMapping("/viaggi")
+public class ViaggioController {
 
     @Autowired
-    private DipendenteService service;
+    private ViaggioService service;
 
     @GetMapping
-    public Page<Dipendente> findAll(
+    public Page<Viaggio> findAll(
             @RequestParam(defaultValue = "0")int page,
             @RequestParam(defaultValue = "10")int size,
             @RequestParam(defaultValue = "id")String sortBy){
-            return this.service.findAll(page,size,sortBy);
+        return this.service.findAll(page,size,sortBy);
     }
-
     @GetMapping("/{id}")
-    public Dipendente findById(@PathVariable UUID id){
+    public Viaggio findById(@PathVariable UUID id){
         return this.service.findById(id);
     }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Dipendente createDipendente(@RequestBody @Validated NewDipendentePayload body, BindingResult result){
+    public Viaggio createViaggio(@RequestBody @Validated NewViaggioPayload body, BindingResult result){
         if(result.hasErrors()){
             throw new ValidationException(result.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
         }
-        return this.service.createDipentente(body);
+        return this.service.createViaggio(body);
     }
-    @PutMapping("/{id}")
-    public Dipendente updateDipendente(@RequestBody @Validated NewDipendentePayload body, BindingResult result, @PathVariable UUID id){
-        if(result.hasErrors()){
-            throw new ValidationException(result.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
-        }
-        return this.service.updateDipendente(body,id);
-    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteDipendente(@PathVariable UUID id){
-        this.service.deleteDipendente(id);
+    public void deleteViaggio(@PathVariable UUID id){
+        this.service.deleteViaggio(id);
     }
-    @PatchMapping("/{id}/avatar")
-    public String editAvatar(){
-        return "PATCH";
-    }
+
 }

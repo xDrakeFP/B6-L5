@@ -1,32 +1,59 @@
 package federicopini.B6_L5.controllers;
 
+import federicopini.B6_L5.entities.Dipendente;
+import federicopini.B6_L5.exceptions.ValidationException;
+import federicopini.B6_L5.payloads.NewDipendentePayload;
+import federicopini.B6_L5.services.DipendenteService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/dipendenti")
 public class DipendenteController {
+
+    @Autowired
+    private DipendenteService dipendenteService;
+
     @GetMapping
-    public String getAll(){
-        return "GET";
+    public Page<Dipendente> findAll(
+            @RequestParam(defaultValue = "0")int page,
+            @RequestParam(defaultValue = "10")int size,
+            @RequestParam(defaultValue = "id")String sortBy){
+            return this.dipendenteService.findAll(page,size,sortBy);
     }
 
-    @GetMapping("/{dipendenteID}")
-    public String findById(){
-        return "GET ID";
+    @GetMapping("/{id}")
+    public Dipendente findById(@PathVariable UUID id){
+        return this.dipendenteService.findById(id);
     }
     @PostMapping
-    public String createDipendene(){
-        return "POST";
+    @ResponseStatus(HttpStatus.CREATED)
+    public Dipendente createDipendene(@RequestBody @Validated NewDipendentePayload body, BindingResult result){
+        if(result.hasErrors()){
+            throw new ValidationException(result.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
+        }
+        return this.dipendenteService.createDipentente(body);
     }
-    @PutMapping("/{dipendenteID}")
-    public String updateDipendente(){
-    return "PUT";
+    @PutMapping("/{id}")
+    public Dipendente updateDipendente(@RequestBody @Validated NewDipendentePayload body, BindingResult result, @PathVariable UUID id){
+        if(result.hasErrors()){
+            throw new ValidationException(result.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
+        }
+        return this.dipendenteService.updateDipendente(body,id);
     }
-    @DeleteMapping("/{dipendenteID}")
-    public String deleteDipendente(){
-        return "DELETE";
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteDipendente(@PathVariable UUID id){
+        this.dipendenteService.deleteDipendente(id);
     }
-    @PatchMapping("/{dipendenteID}/avatar")
+    @PatchMapping("/{id}/avatar")
     public String editAvatar(){
         return "PATCH";
     }

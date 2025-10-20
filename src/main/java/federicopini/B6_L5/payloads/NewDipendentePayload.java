@@ -21,4 +21,6 @@ public class NewDipendentePayload {
     private String email;
     @NotBlank
     private String avatarURL;
+    @NotBlank
+    private String password;
 }

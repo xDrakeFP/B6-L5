@@ -35,14 +35,7 @@ public class DipendenteController {
     public Dipendente findById(@PathVariable UUID id){
         return this.service.findById(id);
     }
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Dipendente createDipendente(@RequestBody @Validated NewDipendentePayload body, BindingResult result){
-        if(result.hasErrors()){
-            throw new ValidationException(result.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
-        }
-        return this.service.createDipentente(body);
-    }
+
     @PutMapping("/{id}")
     public Dipendente updateDipendente(@RequestBody @Validated NewDipendentePayload body, BindingResult result, @PathVariable UUID id){
         if(result.hasErrors()){

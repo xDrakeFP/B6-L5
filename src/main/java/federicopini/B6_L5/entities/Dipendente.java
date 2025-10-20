@@ -23,12 +23,14 @@ public class Dipendente {
     private String email;
     @Column(name ="url_avatar")
     private String avatarURL;
+    private String password;
 
-    public Dipendente(String username, String nome, String cognome, String email, String avatarURL) {
+    public Dipendente(String username, String nome, String cognome, String email, String avatarURL, String password) {
         this.username = username;
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
         this.avatarURL = avatarURL;
+        this.password = password;
     }
 }

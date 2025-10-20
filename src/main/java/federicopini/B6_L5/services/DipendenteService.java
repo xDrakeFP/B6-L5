@@ -45,10 +45,14 @@ public class DipendenteService {
         return repo.findById(id).orElseThrow(()-> new NotFoundException("Dipendente non trovato con id "+ id));
     }
 
+    public Dipendente findByEmail(String email){
+        return repo.findByEmail(email).orElseThrow(() -> new NotFoundException("Dipendente non trovato con email "+ email));
+    }
+
     public Dipendente createDipentente(NewDipendentePayload body){
     if (repo.existsByEmail(body.getEmail())) throw new DataInUseException("Email già utilizzata");
     if (repo.existsByUsername(body.getUsername())) throw new DataInUseException("Username già utilizzato");
-    Dipendente newDipendente = new Dipendente(body.getUsername(),body.getNome(), body.getCognome(), body.getEmail(), body.getAvatarURL());
+    Dipendente newDipendente = new Dipendente(body.getUsername(),body.getNome(), body.getCognome(), body.getEmail(), body.getAvatarURL(), body.getPassword());
     repo.save(newDipendente);
     return newDipendente;
     }
@@ -70,6 +74,7 @@ public class DipendenteService {
         found.setEmail(body.getEmail());
         found.setUsername(body.getUsername());
         found.setAvatarURL(body.getAvatarURL());
+        found.setPassword(body.getPassword());
         Dipendente modifiedDipendente = this.repo.save(found);
         log.info("Modificato con successo il dipendente con id "+modifiedDipendente.getId());
         return modifiedDipendente;

@@ -10,6 +10,7 @@ import federicopini.B6_L5.payloads.NewDipendentePayload;
 import federicopini.B6_L5.repos.DipendenteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +36,9 @@ public class DipendenteService {
     @Autowired
     private DipendenteRepository repo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public Page<Dipendente> findAll(int pageNumber, int pageSize, String sortBy) {
         if (pageSize>20) pageSize = 50;
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).ascending());
@@ -52,7 +56,8 @@ public class DipendenteService {
     public Dipendente createDipentente(NewDipendentePayload body){
     if (repo.existsByEmail(body.getEmail())) throw new DataInUseException("Email già utilizzata");
     if (repo.existsByUsername(body.getUsername())) throw new DataInUseException("Username già utilizzato");
-    Dipendente newDipendente = new Dipendente(body.getUsername(),body.getNome(), body.getCognome(), body.getEmail(), body.getAvatarURL(), body.getPassword());
+    Dipendente newDipendente = new Dipendente(body.getUsername(),body.getNome(), body.getCognome(), body.getEmail(), body.getAvatarURL());
+    newDipendente.setPassword(passwordEncoder.encode(body.getPassword()));
     repo.save(newDipendente);
     return newDipendente;
     }

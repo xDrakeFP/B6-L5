@@ -11,13 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JWTTools {
-private Key key;
+private SecretKey key;
 
 public JWTTools(@Value("${jwt.secret}") String secret) {
     this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
